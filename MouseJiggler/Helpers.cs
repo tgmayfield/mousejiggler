@@ -35,38 +35,98 @@ namespace ArkaneSystems.MouseJiggler
         ///     Jiggle the mouse; i.e., fake a mouse movement event.
         /// </summary>
         /// <param name="delta">The mouse will be moved by delta pixels along both X and Y.</param>
-        internal static void Jiggle (int delta)
+        internal static void Jiggle(int delta)
         {
             var inp = new User32.INPUT
-                      {
-                          type = User32.InputType.INPUT_MOUSE,
-                          Inputs = new User32.INPUT.InputUnion
-                                   {
-                                       mi = new User32.MOUSEINPUT
-                                            {
-                                                dx                 = delta,
-                                                dy                 = delta,
-                                                mouseData          = 0,
-                                                dwFlags            = User32.MOUSEEVENTF.MOUSEEVENTF_MOVE,
-                                                time               = 0,
-                                                dwExtraInfo_IntPtr = IntPtr.Zero,
-                                            },
-                                   },
-                      };
+            {
+                type = User32.InputType.INPUT_MOUSE,
+                Inputs = new User32.INPUT.InputUnion
+                {
+                    mi = new User32.MOUSEINPUT
+                    {
+                        dx = delta,
+                        dy = delta,
+                        mouseData = 0,
+                        dwFlags = User32.MOUSEEVENTF.MOUSEEVENTF_MOVE,
+                        time = 0,
+                        dwExtraInfo_IntPtr = IntPtr.Zero,
+                    },
+                },
+            };
 
-            uint returnValue = User32.SendInput (nInputs: 1, pInputs: new[] {inp,}, cbSize: Marshal.SizeOf<User32.INPUT> ());
+            uint returnValue = User32.SendInput(nInputs: 1, pInputs: new[] { inp, }, cbSize: Marshal.SizeOf<User32.INPUT>());
 
             if (returnValue != 1)
             {
-                int errorCode = Marshal.GetLastWin32Error ();
+                int errorCode = Marshal.GetLastWin32Error();
 
-                Debugger.Log (level: 1,
+                Debugger.Log(level: 1,
                               category: "Jiggle",
                               message:
                               $"failed to insert event to input stream; retval={returnValue}, errcode=0x{errorCode:x8}\n");
             }
         }
 
+        internal static void Click()
+        {
+            var inp = new User32.INPUT
+            {
+                type = User32.InputType.INPUT_MOUSE,
+                Inputs = new User32.INPUT.InputUnion
+                {
+                    mi = new User32.MOUSEINPUT
+                    {
+                        dx = 0,
+                        dy = 0,
+                        mouseData = 0,
+                        dwFlags = User32.MOUSEEVENTF.MOUSEEVENTF_LEFTDOWN,
+                        time = 0,
+                        dwExtraInfo_IntPtr = IntPtr.Zero,
+                    },
+                },
+            };
+
+            uint returnValue = User32.SendInput(nInputs: 1, pInputs: new[] { inp, }, cbSize: Marshal.SizeOf<User32.INPUT>());
+
+            if (returnValue != 1)
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+
+                Debugger.Log(level: 1,
+                              category: "Click",
+                              message:
+                              $"failed to insert event to input stream; retval={returnValue}, errcode=0x{errorCode:x8}\n");
+            }
+            
+            inp = new User32.INPUT
+            {
+                type = User32.InputType.INPUT_MOUSE,
+                Inputs = new User32.INPUT.InputUnion
+                {
+                    mi = new User32.MOUSEINPUT
+                    {
+                        dx = 0,
+                        dy = 0,
+                        mouseData = 0,
+                        dwFlags = User32.MOUSEEVENTF.MOUSEEVENTF_LEFTUP,
+                        time = 0,
+                        dwExtraInfo_IntPtr = IntPtr.Zero,
+                    },
+                },
+            };
+
+            returnValue = User32.SendInput(nInputs: 1, pInputs: new[] { inp, }, cbSize: Marshal.SizeOf<User32.INPUT>());
+
+            if (returnValue != 1)
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+
+                Debugger.Log(level: 1,
+                              category: "Click",
+                              message:
+                              $"failed to insert event to input stream; retval={returnValue}, errcode=0x{errorCode:x8}\n");
+            }
+        }
         #endregion Jiggling
     }
 }

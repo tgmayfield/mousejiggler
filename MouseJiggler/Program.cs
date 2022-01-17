@@ -64,7 +64,7 @@ namespace ArkaneSystems.MouseJiggler
             }
         }
 
-        private static int RootHandler (bool jiggle, bool minimized, bool zen, int seconds)
+        private static int RootHandler (bool jiggle, bool click, bool minimized, bool zen, int jigglePeriodInSeconds, int clickPeriodInSeconds)
         {
             // Prepare Windows Forms to run the application.
             Application.SetHighDpiMode (highDpiMode: HighDpiMode.SystemAware);
@@ -73,9 +73,11 @@ namespace ArkaneSystems.MouseJiggler
 
             // Run the application.
             var mainForm = new MainForm (jiggleOnStartup: jiggle,
+                                         clickOnStartup: click,
                                          minimizeOnStartup: minimized,
                                          zenJiggleEnabled: zen,
-                                         jigglePeriod: seconds);
+                                         jigglePeriod: jigglePeriodInSeconds,
+                                         clickPeriod: clickPeriodInSeconds);
 
             Application.Run (mainForm: mainForm);
 
@@ -89,7 +91,7 @@ namespace ArkaneSystems.MouseJiggler
                               {
                                   Description = "Virtually jiggles the mouse, making the computer seem not idle.",
                                   Handler =
-                                      CommandHandler.Create (action: new Func<bool, bool, bool, int, int> (Program.RootHandler)),
+                                      CommandHandler.Create (action: new Func<bool, bool, bool, bool, int, int, int> (Program.RootHandler)),
                               };
 
             // -j --jiggle
@@ -97,6 +99,12 @@ namespace ArkaneSystems.MouseJiggler
             optJiggling.Argument = new Argument<bool> ();
             optJiggling.Argument.SetDefaultValue (value: false);
             rootCommand.AddOption (option: optJiggling);
+
+            // -c --click
+            Option optClicking = new (aliases: new[] {"--click", "-c",}, description: "Start with clicking enabled.");
+            optClicking.Argument = new Argument<bool> ();
+            optClicking.Argument.SetDefaultValue (value: false);
+            rootCommand.AddOption (option: optClicking);
 
             // -m --minimized
             Option optMinimized = new (aliases: new[] {"--minimized", "-m",}, description: "Start minimized.");
@@ -111,22 +119,38 @@ namespace ArkaneSystems.MouseJiggler
             rootCommand.AddOption (option: optZen);
 
             // -s 60 --seconds=60
-            Option optPeriod = new (aliases: new[] {"--seconds", "-s",},
+            Option optJigglePeriod = new (aliases: new[] {"--jigglePeriodInSeconds", "-s",},
                                     description: "Set number of seconds for the jiggle interval.");
 
-            optPeriod.Argument = new Argument<int> ();
+            optJigglePeriod.Argument = new Argument<int> ();
 
-            optPeriod.AddValidator (validate: p => p.GetValueOrDefault<int> () < 1
+            optJigglePeriod.AddValidator (validate: p => p.GetValueOrDefault<int> () < 1
                                                        ? "Period cannot be shorter than 1 second."
                                                        : null);
 
-            optPeriod.AddValidator (validate: p => p.GetValueOrDefault<int> () > 60
+            optJigglePeriod.AddValidator (validate: p => p.GetValueOrDefault<int> () > 60
                                                        ? "Period cannot be longer than 60 seconds."
                                                        : null);
 
-            optPeriod.Argument.SetDefaultValue (value: Settings.Default.JigglePeriod);
-            rootCommand.AddOption (option: optPeriod);
+            optJigglePeriod.Argument.SetDefaultValue (value: Settings.Default.JigglePeriod);
+            rootCommand.AddOption (option: optJigglePeriod);
 
+            // -s 60 --seconds=60
+            Option optClickPeriod = new (aliases: new[] {"--clickPeriodInSeconds", "-p",},
+                                    description: "Set number of seconds for the click interval.");
+
+            optClickPeriod.Argument = new Argument<int> ();
+
+            optClickPeriod.AddValidator (validate: p => p.GetValueOrDefault<int> () < 1
+                                                       ? "Click Period cannot be shorter than 1 second."
+                                                       : null);
+
+            optClickPeriod.AddValidator (validate: p => p.GetValueOrDefault<int> () > 60
+                                                       ? "Click Period cannot be longer than 60 seconds."
+                                                       : null);
+
+            optClickPeriod.Argument.SetDefaultValue (value: Settings.Default.ClickPeriod);
+            rootCommand.AddOption (option: optClickPeriod);
             // Build the command line parser.
             return rootCommand;
         }

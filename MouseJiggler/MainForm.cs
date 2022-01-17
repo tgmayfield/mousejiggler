@@ -23,30 +23,37 @@ namespace ArkaneSystems.MouseJiggler
         ///     Constructor for use by the form designer.
         /// </summary>
         public MainForm ()
-            : this (jiggleOnStartup: false, minimizeOnStartup: false, zenJiggleEnabled: false, jigglePeriod: 1)
+            : this (jiggleOnStartup: false, clickOnStartup:false, minimizeOnStartup: false, zenJiggleEnabled: false, jigglePeriod: 1, clickPeriod: 1)
         { }
 
-        public MainForm (bool jiggleOnStartup, bool minimizeOnStartup, bool zenJiggleEnabled, int jigglePeriod)
+        public MainForm (bool jiggleOnStartup, bool clickOnStartup, bool minimizeOnStartup, bool zenJiggleEnabled, int jigglePeriod, int clickPeriod)
         {
             this.InitializeComponent ();
 
             // Jiggling on startup?
             this.JiggleOnStartup = jiggleOnStartup;
+            this.clickOnStartup = clickOnStartup;
 
             // Set settings properties
             // We do this by setting the controls, and letting them set the properties.
 
             this.cbMinimize.Checked = minimizeOnStartup;
             this.cbZen.Checked      = zenJiggleEnabled;
-            this.tbPeriod.Value     = jigglePeriod;
+            this.tbJigglePeriod.Value     = jigglePeriod;
+            this.tbClickPeriod.Value     = clickPeriod;
         }
 
         public bool JiggleOnStartup { get; }
+
+        public bool clickOnStartup { get; }
 
         private void MainForm_Load (object sender, EventArgs e)
         {
             if (this.JiggleOnStartup)
                 this.cbJiggling.Checked = true;
+
+            if (this.clickOnStartup)
+                this.cbClicking.Checked = true;    
         }
 
         private void UpdateNotificationAreaText ()
@@ -84,11 +91,15 @@ namespace ArkaneSystems.MouseJiggler
             this.ZenJiggleEnabled = this.cbZen.Checked;
         }
 
-        private void tbPeriod_ValueChanged (object sender, EventArgs e)
+        private void tbJigglePeriod_ValueChanged (object sender, EventArgs e)
         {
-            this.JigglePeriod = this.tbPeriod.Value;
+            this.JigglePeriod = this.tbJigglePeriod.Value;
         }
 
+        private void tbClickPeriod_ValueChanged (object sender, EventArgs e)
+        {
+            this.ClickPeriod = this.tbClickPeriod.Value;
+        }
         #endregion Property synchronization
 
         #region Do the Jiggle!
@@ -98,6 +109,11 @@ namespace ArkaneSystems.MouseJiggler
         private void cbJiggling_CheckedChanged (object sender, EventArgs e)
         {
             this.jiggleTimer.Enabled = this.cbJiggling.Checked;
+        }
+
+        private void cbClicking_CheckedChanged (object sender, EventArgs e)
+        {
+            this.clickTimer.Enabled = this.cbClicking.Checked;
         }
 
         private void jiggleTimer_Tick (object sender, EventArgs e)
@@ -111,7 +127,10 @@ namespace ArkaneSystems.MouseJiggler
 
             this.Zig = !this.Zig;
         }
-
+        private void clickTimer_Tick (object sender, EventArgs e)
+        {
+            Helpers.Click ();
+        }
         #endregion Do the Jiggle!
 
         #region Minimize and restore
@@ -148,9 +167,13 @@ namespace ArkaneSystems.MouseJiggler
 
         private int jigglePeriod;
 
+        private int clickPeriod;
+
         private bool minimizeOnStartup;
 
         private bool zenJiggleEnabled;
+
+        private bool clickEnabled;
 
         #endregion Settings property backing fields
 
@@ -167,6 +190,16 @@ namespace ArkaneSystems.MouseJiggler
             }
         }
 
+        public bool ClickEnabled
+        {
+            get => this.clickEnabled;
+            set
+            {
+                this.clickEnabled      = value;
+                Settings.Default.Click = value;
+                Settings.Default.Save ();
+            }
+        }
         public bool ZenJiggleEnabled
         {
             get => this.zenJiggleEnabled;
@@ -188,10 +221,23 @@ namespace ArkaneSystems.MouseJiggler
                 Settings.Default.Save ();
 
                 this.jiggleTimer.Interval = value * 1000;
-                this.lbPeriod.Text        = $"{value} s";
+                this.lbJigglePeriod.Text        = $"{value} s";
             }
         }
 
+        public int ClickPeriod
+        {
+            get => this.clickPeriod;
+            set
+            {
+                this.clickPeriod             = value;
+                Settings.Default.ClickPeriod = value;
+                Settings.Default.Save ();
+
+                this.jiggleTimer.Interval = value * 1000;
+                this.lbClickPeriod.Text        = $"{value} s";
+            }
+        }
         #endregion Settings properties
 
         #region Minimize on start

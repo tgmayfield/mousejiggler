@@ -32,28 +32,37 @@ namespace ArkaneSystems.MouseJiggler
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.jiggleTimer = new System.Windows.Forms.Timer(this.components);
+            this.clickTimer = new System.Windows.Forms.Timer(this.components);
             this.flpLayout = new System.Windows.Forms.FlowLayoutPanel();
             this.panelBase = new System.Windows.Forms.Panel();
             this.cmdAbout = new System.Windows.Forms.Button();
             this.cmdTrayify = new System.Windows.Forms.Button();
             this.cbSettings = new System.Windows.Forms.CheckBox();
             this.cbJiggling = new System.Windows.Forms.CheckBox();
+            this.cbClicking = new System.Windows.Forms.CheckBox();
             this.panelSettings = new System.Windows.Forms.Panel();
-            this.lbPeriod = new System.Windows.Forms.Label();
-            this.tbPeriod = new System.Windows.Forms.TrackBar();
+            this.lbJigglePeriod = new System.Windows.Forms.Label();
+            this.tbJigglePeriod = new System.Windows.Forms.TrackBar();
+            this.lbClickPeriod = new System.Windows.Forms.Label();
+            this.tbClickPeriod = new System.Windows.Forms.TrackBar();
             this.cbMinimize = new System.Windows.Forms.CheckBox();
             this.cbZen = new System.Windows.Forms.CheckBox();
             this.niTray = new System.Windows.Forms.NotifyIcon(this.components);
             this.flpLayout.SuspendLayout();
             this.panelBase.SuspendLayout();
             this.panelSettings.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbPeriod)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbJigglePeriod)).BeginInit();
             this.SuspendLayout();
             // 
             // jiggleTimer
             // 
             this.jiggleTimer.Interval = 1000;
             this.jiggleTimer.Tick += new System.EventHandler(this.jiggleTimer_Tick);
+            // 
+            // clickTimer
+            // 
+            this.clickTimer.Interval = 1000;
+            this.clickTimer.Tick += new System.EventHandler(this.clickTimer_Tick);
             // 
             // flpLayout
             // 
@@ -75,9 +84,10 @@ namespace ArkaneSystems.MouseJiggler
             this.panelBase.Controls.Add(this.cmdTrayify);
             this.panelBase.Controls.Add(this.cbSettings);
             this.panelBase.Controls.Add(this.cbJiggling);
+            this.panelBase.Controls.Add(this.cbClicking);
             this.panelBase.Location = new System.Drawing.Point(8, 8);
             this.panelBase.Name = "panelBase";
-            this.panelBase.Size = new System.Drawing.Size(289, 28);
+            this.panelBase.Size = new System.Drawing.Size(289, 38);
             this.panelBase.TabIndex = 3;
             // 
             // cmdAbout
@@ -121,12 +131,25 @@ namespace ArkaneSystems.MouseJiggler
             this.cbJiggling.UseVisualStyleBackColor = true;
             this.cbJiggling.CheckedChanged += new System.EventHandler(this.cbJiggling_CheckedChanged);
             // 
+            // cbClicking
+            // 
+            this.cbClicking.AutoSize = true;
+            this.cbClicking.Location = new System.Drawing.Point(10, 20);
+            this.cbClicking.Name = "cbClicking";
+            this.cbClicking.Size = new System.Drawing.Size(72, 19);
+            this.cbClicking.TabIndex = 0;
+            this.cbClicking.Text = "Clicking?";
+            this.cbClicking.UseVisualStyleBackColor = true;
+            this.cbClicking.CheckedChanged += new System.EventHandler(this.cbClicking_CheckedChanged);
+            // 
             // panelSettings
             // 
             this.panelSettings.AutoSize = true;
             this.panelSettings.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panelSettings.Controls.Add(this.lbPeriod);
-            this.panelSettings.Controls.Add(this.tbPeriod);
+            this.panelSettings.Controls.Add(this.lbJigglePeriod);
+            this.panelSettings.Controls.Add(this.tbJigglePeriod);
+            this.panelSettings.Controls.Add(this.lbClickPeriod);
+            this.panelSettings.Controls.Add(this.tbClickPeriod);
             this.panelSettings.Controls.Add(this.cbMinimize);
             this.panelSettings.Controls.Add(this.cbZen);
             this.panelSettings.Location = new System.Drawing.Point(8, 42);
@@ -137,26 +160,49 @@ namespace ArkaneSystems.MouseJiggler
             // 
             // lbPeriod
             // 
-            this.lbPeriod.AutoSize = true;
-            this.lbPeriod.Location = new System.Drawing.Point(244, 41);
-            this.lbPeriod.Name = "lbPeriod";
-            this.lbPeriod.Size = new System.Drawing.Size(21, 15);
-            this.lbPeriod.TabIndex = 3;
-            this.lbPeriod.Text = "1 s";
+            this.lbJigglePeriod.AutoSize = true;
+            this.lbJigglePeriod.Location = new System.Drawing.Point(244, 41);
+            this.lbJigglePeriod.Name = "lbJigglePeriod";
+            this.lbJigglePeriod.Size = new System.Drawing.Size(21, 15);
+            this.lbJigglePeriod.TabIndex = 3;
+            this.lbJigglePeriod.Text = "1 s";
             // 
             // tbPeriod
             // 
-            this.tbPeriod.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tbJigglePeriod.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbPeriod.Location = new System.Drawing.Point(4, 62);
-            this.tbPeriod.Maximum = 60;
-            this.tbPeriod.Minimum = 1;
-            this.tbPeriod.Name = "tbPeriod";
-            this.tbPeriod.Size = new System.Drawing.Size(281, 45);
-            this.tbPeriod.TabIndex = 6;
-            this.tbPeriod.TickFrequency = 2;
-            this.tbPeriod.Value = 1;
-            this.tbPeriod.ValueChanged += new System.EventHandler(this.tbPeriod_ValueChanged);
+            this.tbJigglePeriod.Location = new System.Drawing.Point(4, 62);
+            this.tbJigglePeriod.Maximum = 60;
+            this.tbJigglePeriod.Minimum = 1;
+            this.tbJigglePeriod.Name = "tbJigglePeriod";
+            this.tbJigglePeriod.Size = new System.Drawing.Size(281, 45);
+            this.tbJigglePeriod.TabIndex = 6;
+            this.tbJigglePeriod.TickFrequency = 2;
+            this.tbJigglePeriod.Value = 1;
+            this.tbJigglePeriod.ValueChanged += new System.EventHandler(this.tbJigglePeriod_ValueChanged);
+            // 
+            // lbClickPeriod
+            // 
+            this.lbClickPeriod.AutoSize = true;
+            this.lbClickPeriod.Location = new System.Drawing.Point(244, 101);
+            this.lbClickPeriod.Name = "lbClickPeriod";
+            this.lbClickPeriod.Size = new System.Drawing.Size(21, 15);
+            this.lbClickPeriod.TabIndex = 3;
+            this.lbClickPeriod.Text = "1 s";
+            // 
+            // tbClickPeriod
+            // 
+            this.tbClickPeriod.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbClickPeriod.Location = new System.Drawing.Point(4, 112);
+            this.tbClickPeriod.Maximum = 60;
+            this.tbClickPeriod.Minimum = 1;
+            this.tbClickPeriod.Name = "tbClickPeriod";
+            this.tbClickPeriod.Size = new System.Drawing.Size(281, 45);
+            this.tbClickPeriod.TabIndex = 6;
+            this.tbClickPeriod.TickFrequency = 2;
+            this.tbClickPeriod.Value = 1;
+            this.tbClickPeriod.ValueChanged += new System.EventHandler(this.tbClickPeriod_ValueChanged);
             // 
             // cbMinimize
             // 
@@ -208,7 +254,7 @@ namespace ArkaneSystems.MouseJiggler
             this.panelBase.PerformLayout();
             this.panelSettings.ResumeLayout(false);
             this.panelSettings.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbPeriod)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbJigglePeriod)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -217,15 +263,20 @@ namespace ArkaneSystems.MouseJiggler
         #endregion
 
         private System.Windows.Forms.Timer jiggleTimer;
+
+        private System.Windows.Forms.Timer clickTimer;
         private System.Windows.Forms.FlowLayoutPanel flpLayout;
         private System.Windows.Forms.Panel panelSettings;
-        private System.Windows.Forms.TrackBar tbPeriod;
+        private System.Windows.Forms.TrackBar tbJigglePeriod;
+        private System.Windows.Forms.TrackBar tbClickPeriod;
         private System.Windows.Forms.CheckBox cbMinimize;
         private System.Windows.Forms.CheckBox cbZen;
         private System.Windows.Forms.Panel panelBase;
         private System.Windows.Forms.CheckBox cbSettings;
         private System.Windows.Forms.CheckBox cbJiggling;
-        private System.Windows.Forms.Label lbPeriod;
+        private System.Windows.Forms.CheckBox cbClicking;
+        private System.Windows.Forms.Label lbJigglePeriod;
+        private System.Windows.Forms.Label lbClickPeriod;
         private System.Windows.Forms.Button cmdAbout;
         private System.Windows.Forms.NotifyIcon niTray;
         private System.Windows.Forms.Button cmdTrayify;

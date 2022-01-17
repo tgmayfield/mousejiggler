@@ -46,6 +46,18 @@ namespace ArkaneSystems.MouseJiggler.Properties {
                 this["ZenJiggle"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Click {
+            get {
+                return ((bool)(this["Click"]));
+            }
+            set {
+                this["Click"] = value;
+            }
+        }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -56,6 +68,18 @@ namespace ArkaneSystems.MouseJiggler.Properties {
             }
             set {
                 this["JigglePeriod"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int ClickPeriod {
+            get {
+                return ((int)(this["ClickPeriod"]));
+            }
+            set {
+                this["ClickPeriod"] = value;
             }
         }
     }
